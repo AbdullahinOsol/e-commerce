@@ -1,5 +1,6 @@
 # e-commerce
 (the project is present in master branch of this repository)
+(for guidance after office hours, feel free contact me on whatsapp)
 
 install postgresql
 
