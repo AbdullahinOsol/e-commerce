@@ -1,0 +1,98 @@
+{% extends './base2.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+
+<div class="py-10 bg-gray-200 w-full">
+    <div class="max-w-7xl mx-auto px-4 py-16">
+        {% if category %}
+          <h3 class="py-3 text-center text-black">{{ category.name | capfirst }}</h3>
+          <hr class="border-gray-300">
+        {% elif query %}
+          <h3 class="py-3 text-center text-black">Search Results for "{{ query }}"</h3>
+          <hr class="border-gray-300">
+        {% elif heading %}
+          <h3 class="py-3 text-center text-black">{{ heading }}</h3>
+          <hr class="border-gray-300">
+        {% endif %}
+        {% comment %} <br> {% endcomment %}
+
+        <div class="row ml-2 pb-5">
+            <div class="col-md-12 pl-2">
+  
+              <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 g-4">
+
+                {% if not products %}
+                  <img src="{% static 'media/images/no-results1.png' %}" style="width: 750px; height: auto;" alt="No Results" class="justify-content-center align-items-center mx-auto">
+                {% endif %}
+                
+                {% for product in products %}
+                  <div class="col">
+                    <div class="product-item p-3 bg-light rounded shadow-sm">
+                      <figure>
+                        <a href="{{ product.get_absolute_url }}" title="Product Title">
+                          <img src="{{ product.image.url }}" alt="Product Thumbnail" class="tab-image">
+                        </a>
+                      </figure>
+                      <div class="d-flex flex-column text-center">
+                        <h3 class="fs-6 fw-normal">{{ product.title }}</h3>
+                        <div>
+                          {% with rating=product.average_rating %}
+                            <span class="rating">
+                              {% for i in star_range %}
+                                {% if rating >= i %}
+                                  <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                {% elif rating > i|sub:1 %}
+                                  <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
+                                {% else %}
+                                  <svg width="18" height="18" class="text-warning"><use xlink:href="#star-empty"></use></svg>
+                                {% endif %}
+                              {% endfor %}
+                            </span>
+                          {% endwith %}
+                          <span>({{ product.reviews.count }})</span>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                          {% if product.sale %}
+                            <del>{{ product.price }}</del>
+                          {% endif %}
+                          <span class="text-dark fw-semibold">$ {{ product.get_sale_price }}</span>
+                          {% if product.sale %}
+                            <span class="badge border border-dark-subtle rounded-0 fw-normal px-1 fs-7 lh-1 text-body-tertiary">{{ product.sale }}% OFF</span>
+                          {% endif %}
+                        </div>
+                        <div class="button-area p-3 pt-0">
+                          <div class="row g-1 mt-2">
+                            <div class="col-3"><input type="number" name="quantity" class="form-control border-dark-subtle input-number quantity" value="1" min="1" max="4"></div>
+                            <div class="col-7"><a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart"><svg width="18" height="18"><use xlink:href="#cart"></use></svg> Add to Cart</a></div>
+                            <div class="col-2">
+                              <button 
+                                type="button" 
+                                class="wishlist-btn btn p-2 rounded-circle transition {% if product.in_wishlist %}active{% endif %}" 
+                                data-product-id="{{ product.id }}" 
+                                data-in-wishlist="{{ product.in_wishlist|yesno:'true,false' }}"
+                                data-toggle-url="{% url 'toggle-wishlist' %}"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="none" class="bi bi-heart heart-icon" viewBox="0 0 16 16">
+                                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+  
+              </div>
+              <!-- / product-grid -->
+  
+  
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

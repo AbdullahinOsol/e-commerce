@@ -1,0 +1,569 @@
+{% load static %}
+{% load mathfilters %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>OsolShops</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    
+    <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  </head>
+  <body>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+      <defs>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="menu" viewBox="0 0 24 24"><path fill="currentColor" d="M2 6a1 1 0 0 1 1-1h18a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1m0 6.032a1 1 0 0 1 1-1h18a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1m1 5.033a1 1 0 1 0 0 2h18a1 1 0 0 0 0-2z"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="3"/><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M17.97 20c-.16-2.892-1.045-5-5.97-5s-5.81 2.108-5.97 5"/></g></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="wishlist" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16.09v-4.992c0-4.29 0-6.433-1.318-7.766C18.364 2 16.242 2 12 2C7.757 2 5.636 2 4.318 3.332C3 4.665 3 6.81 3 11.098v4.993c0 3.096 0 4.645.734 5.321c.35.323.792.526 1.263.58c.987.113 2.14-.907 4.445-2.946c1.02-.901 1.529-1.352 2.118-1.47c.29-.06.59-.06.88 0c.59.118 1.099.569 2.118 1.47c2.305 2.039 3.458 3.059 4.445 2.945c.47-.053.913-.256 1.263-.579c.734-.676.734-2.224.734-5.321Z"/><path stroke-linecap="round" d="M15 6H9"/></g></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="shopping-bag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.864 16.455c-.858-3.432-1.287-5.147-.386-6.301C4.378 9 6.148 9 9.685 9h4.63c3.538 0 5.306 0 6.207 1.154c.901 1.153.472 2.87-.386 6.301c-.546 2.183-.818 3.274-1.632 3.91c-.814.635-1.939.635-4.189.635h-4.63c-2.25 0-3.375 0-4.189-.635c-.814-.636-1.087-1.727-1.632-3.91Z"/><path d="m19.5 9.5l-.71-2.605c-.274-1.005-.411-1.507-.692-1.886A2.5 2.5 0 0 0 17 4.172C16.56 4 16.04 4 15 4M4.5 9.5l.71-2.605c.274-1.005.411-1.507.692-1.886A2.5 2.5 0 0 1 7 4.172C7.44 4 7.96 4 9 4"/><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2h-4a1 1 0 0 1-1-1Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 13v4m8-4v4m-4-4v4"/></g></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="star-full" viewBox="0 0 24 24"><path fill="currentColor" d="m3.1 11.3l3.6 3.3l-1 4.6c-.1.6.1 1.2.6 1.5c.2.2.5.3.8.3c.2 0 .4 0 .6-.1c0 0 .1 0 .1-.1l4.1-2.3l4.1 2.3s.1 0 .1.1c.5.2 1.1.2 1.5-.1c.5-.3.7-.9.6-1.5l-1-4.6c.4-.3 1-.9 1.6-1.5l1.9-1.7l.1-.1c.4-.4.5-1 .3-1.5s-.6-.9-1.2-1h-.1l-4.7-.5l-1.9-4.3s0-.1-.1-.1c-.1-.7-.6-1-1.1-1c-.5 0-1 .3-1.3.8c0 0 0 .1-.1.1L8.7 8.2L4 8.7h-.1c-.5.1-1 .5-1.2 1c-.1.6 0 1.2.4 1.6"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="star-half" viewBox="0 0 24 24"><path fill="currentColor" d="m3.1 11.3l3.6 3.3l-1 4.6c-.1.6.1 1.2.6 1.5c.2.2.5.3.8.3c.2 0 .4 0 .6-.1c0 0 .1 0 .1-.1l4.1-2.3l4.1 2.3s.1 0 .1.1c.5.2 1.1.2 1.5-.1c.5-.3.7-.9.6-1.5l-1-4.6c.4-.3 1-.9 1.6-1.5l1.9-1.7l.1-.1c.4-.4.5-1 .3-1.5s-.6-.9-1.2-1h-.1l-4.7-.5l-1.9-4.3s0-.1-.1-.1c-.1-.7-.6-1-1.1-1c-.5 0-1 .3-1.3.8c0 0 0 .1-.1.1L8.7 8.2L4 8.7h-.1c-.5.1-1 .5-1.2 1c-.1.6 0 1.2.4 1.6m8.9 5V5.8l1.7 3.8c.1.3.5.5.8.6l4.2.5l-3.1 2.8c-.3.2-.4.6-.3 1c0 .2.5 2.2.8 4.1l-3.6-2.1c-.2-.2-.3-.2-.5-.2"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="star-empty" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" d="M12 2.75c.3 0 .6.2.8.5l2.2 4.6 5 .7c.3 0 .5.2.6.5.1.3 0 .6-.2.8l-3.7 3.5.9 5.2c0 .3-.1.6-.4.8-.2.2-.5.2-.8.1L12 17.7l-4.4 2.3c-.3.1-.6.1-.8-.1-.2-.2-.4-.5-.4-.8l.9-5.2-3.7-3.5c-.2-.2-.3-.5-.2-.8.1-.3.3-.5.6-.5l5-.7 2.2-4.6c.2-.3.5-.5.8-.5z"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="cart" viewBox="0 0 24 24"><path fill="currentColor" d="M8.5 19a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 8.5 19ZM19 16H7a1 1 0 0 1 0-2h8.491a3.013 3.013 0 0 0 2.885-2.176l1.585-5.55A1 1 0 0 0 19 5H6.74a3.007 3.007 0 0 0-2.82-2H3a1 1 0 0 0 0 2h.921a1.005 1.005 0 0 1 .962.725l.155.545v.005l1.641 5.742A3 3 0 0 0 7 18h12a1 1 0 0 0 0-2Zm-1.326-9l-1.22 4.274a1.005 1.005 0 0 1-.963.726H8.754l-.255-.892L7.326 7ZM16.5 19a1.5 1.5 0 1 0 1.5 1.5a1.5 1.5 0 0 0-1.5-1.5Z"/></symbol>
+        <symbol xmlns="http://www.w3.org/2000/svg" id="email" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2ZM4 6h16l-8 5-8-5Zm16 12H4V8l8 5 8-5v10Z"/>
+        </symbol>
+      </defs>
+    </svg>
+
+    <header>
+        <div class="container-fluid">
+          <div class="row py-3 border-bottom justify-content-between">
+            
+            <div class="col-sm-4 col-lg-2 text-center text-sm-start d-flex gap-3 justify-content-center justify-content-md-start">
+              <div class="d-flex align-items-center my-3 my-sm-0">
+                <a href="{% url 'home' %}">
+                  <img src="{% static 'media/images/logo-2.png' %}" alt="logo" class="img-fluid">
+                </a>
+              </div>
+              <button class="navbar-toggler text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" disabled>
+                <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href=""></use></svg>
+              </button>
+            </div>
+            
+            {% if page != 'login' and page != 'register' %}
+            <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-4">
+              <div class="search-bar row bg-light p-2 rounded-4">
+                <div class="col-md-4 d-none d-md-block">
+                  <select id="category-select" class="form-select border-0 bg-transparent custom-select-size" name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                      <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-11 col-md-7">
+                  
+                    <form id="search-form" class="text-center" action="{% url 'search' %}" method="get">
+                      <input type="text" 
+                            class="form-control border-0 bg-transparent custom-select-size" 
+                            placeholder="Search for products" 
+                            name="q" 
+                            value="{{ request.GET.q|default:'' }}">
+                      <input type="hidden" id="category-input" name="category" value="{{ request.GET.category|default:'' }}">
+                    </form>
+                  
+                </div>
+                <div class="col-1">
+                  <button type="submit" form="search-form" class="btn btn-transparent p-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% comment %} <div class="col-lg-4">
+              <ul class="navbar-nav list-unstyled d-flex flex-row gap-3 gap-lg-5 justify-content-center flex-wrap align-items-center mb-0 fw-bold text-uppercase text-dark">
+                <li class="nav-item active">
+                  <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle pe-3" role="button" id="pages" data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
+                  <ul class="dropdown-menu border-0 p-3 rounded-0 shadow" aria-labelledby="pages">
+                    <li><a href="index.html" class="dropdown-item">About Us </a></li>
+                    <li><a href="index.html" class="dropdown-item">Shop </a></li>
+                    <li><a href="index.html" class="dropdown-item">Single Product </a></li>
+                    <li><a href="index.html" class="dropdown-item">Cart </a></li>
+                    <li><a href="index.html" class="dropdown-item">Checkout </a></li>
+                    <li><a href="index.html" class="dropdown-item">Blog </a></li>
+                    <li><a href="index.html" class="dropdown-item">Single Post </a></li>
+                    <li><a href="index.html" class="dropdown-item">Styles </a></li>
+                    <li><a href="index.html" class="dropdown-item">Contact </a></li>
+                    <li><a href="index.html" class="dropdown-item">Thank You </a></li>
+                    <li><a href="index.html" class="dropdown-item">My Account </a></li>
+                    <li><a href="index.html" class="dropdown-item">404 Error </a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div> {% endcomment %}
+            
+            <div class="col-sm-8 col-lg-2 d-flex gap-5 align-items-center justify-content-center justify-content-sm-end">
+              <ul class="d-flex justify-content-end list-unstyled m-0">
+                {% if page != 'login' and page != 'register' %}
+                  <li>
+                    {% if user.is_authenticated %}
+                      <a href="{% url 'wishlist-summary' %}" class="p-2 mx-1">
+                        <svg width="24" height="24"><use xlink:href="#wishlist"></use></svg>
+                      </a>
+                    {% else %}
+                      <div data-tippy-content="Login to access wishlist">
+                      <a href="#" class="p-2 mx-1 text-muted" style="pointer-events: none;">
+                        <svg width="24" height="24"><use xlink:href="#wishlist"></use></svg>
+                      </a>
+                      </div>
+                    {% endif %}
+                  </li>
+                  <li>
+                    <a href="{% url 'cart-summary' %}" class="p-2 mx-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
+                      <svg width="24" height="24"><use xlink:href="#shopping-bag"></use></svg>
+                    </a>
+                  </li>
+                {% endif %}
+                <li class="nav-item dropdown justify-content-center">
+                  <a href="#" class="nav-link dropdown-toggle pe-3 text-black ps-3" role="button" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg width="24" height="24"><use xlink:href="#user"></use></svg>
+                  </a>
+                  <ul class="dropdown-menu border-0 p-3 rounded-0 shadow" aria-labelledby="profile">
+                    {% if user.is_authenticated %}
+                      <li><p class="dropdown-item text-black disabled">{{ user.username }} </p></li>
+                      <hr>
+                      <li><a href="{% url 'profile-management' %}" class="dropdown-item">Profile Management </a></li>
+                      <li><a href="{% url 'my-logout' %}" class="dropdown-item">Logout </a></li>
+                    {% else %}
+                      <li><a href="{% url 'my-login' %}" class="dropdown-item">Login </a></li>
+                      <li><a href="{% url 'register' %}" class="dropdown-item">Register </a></li>
+                    {% endif %}
+                  </ul>
+                </li>
+              </ul>
+            </div>
+  
+          </div>
+        </div>
+    </header>
+
+      <div class="w-full">
+        {% block content %}
+        <!-- Your content here -->
+        {% endblock %}
+      </div>
+
+      <!-- Toast Notification (Reusable) -->
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              <!-- Toast message will go here -->
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+
+
+      {% if page != 'login' and page != 'register' and page != 'reset-password'%}
+        <footer class="py-4" style="background-color: #f8f9fa;">
+          <div class="container-lg">
+            <div class="row justify-content-between">
+    
+              <div class="col-md-2 col-sm-6 text-start">
+                <div class="footer-menu pt-2">
+                  <h5 class="widget-title">Contact Us</h5>
+                  <ul class="menu-list list-unstyled">
+                    <li class="menu-item">
+                      <p>Email: info@osoltech.com</p>
+                    </li>
+                    <li class="menu-item">
+                      <p>Address: 16192 Coastal Highway
+                        Lewes DE 19958, USA</p>
+                    </li>
+                    {% comment %} <li class="menu-item">
+                      <a href="{% url 'track-orders' %}" class="nav-link">Track Orders</a>
+                    </li> {% endcomment %}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-lg-3 col-md-6 col-sm-6 d-flex justify-content-center align-items-center">
+                <div class="footer-menu">
+                  <a href="{% url 'home' %}">
+                    <img src="{% static 'media/images/logo-2.png' %}" width="360" height="105" alt="logo">
+                  </a>
+                </div>
+              </div>
+
+              <div class="col-md-2 col-sm-6 text-end pt-4">
+                <div class="footer-menu">
+                  <h5 class="widget-title">Quick Links</h5>
+                  <ul class="menu-list list-unstyled">
+                    <li class="menu-item">
+                      <a href="#categories" class="nav-link">Shop by Categories</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="{% url 'discount-summary' %}" class="nav-link">Discounted Products</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="{% url 'cart-summary' %}" class="nav-link">View Cart</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                      {% comment %} <li class="menu-item">
+                        <a href="{% url 'wishlist-summary' %}" class="nav-link">Wishlist</a>
+                      </li> {% endcomment %}
+                    {% endif %}
+                  </ul>
+                </div>
+              </div>
+              {% comment %} <div class="col-md-2 col-sm-6">
+                <div class="footer-menu">
+                  <h5 class="widget-title">Customer Service</h5>
+                  <ul class="menu-list list-unstyled">
+                    <li class="menu-item">
+                      <a href="#" class="nav-link">FAQ</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="#" class="nav-link">Contact</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="#" class="nav-link">Privacy Policy</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="#" class="nav-link">Returns & Refunds</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="#" class="nav-link">Cookie Guidelines</a>
+                    </li>
+                    <li class="menu-item">
+                      <a href="#" class="nav-link">Delivery Information</a>
+                    </li>
+                  </ul>
+                </div>
+              </div> {% endcomment %}
+              {% comment %} <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="footer-menu">
+                  <h5 class="widget-title">Subscribe Us</h5>
+                  <p>Subscribe to our newsletter to get updates about our grand offers.</p>
+                  <form class="d-flex mt-3 gap-0" action="index.html">
+                    <input class="form-control rounded-start rounded-0 bg-light" type="email" placeholder="Email Address" aria-label="Email Address">
+                    <button class="btn btn-dark rounded-end rounded-0" type="submit">Subscribe</button>
+                  </form>
+                </div>
+              </div> {% endcomment %}
+              
+            </div>
+          </div>
+        </footer>
+        <div id="footer-bottom" style="border-top: 1px solid black; padding-top: 10px;" class="text-center">
+          <div class="container-lg">
+            <div class="row">
+              <div class="col-md-12 copyright">
+                <p>© 2024 Organic. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+
+      <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="offcanvasCart">
+        <div class="offcanvas-header justify-content-end pe-4">
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <div class="order-md-last">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+              <a href="{% url 'cart-summary' %}" class="text-decoration-none">
+                <span class="text-primary">Your cart</span>
+              </a>
+              <span id="cart-qty2" class="badge bg-primary rounded-pill">
+                {% if cart %}{{ cart|length }}{% else %}0{% endif %}
+              </span> 
+            </h4>
+            <ul class="list-group mb-3">
+              {% for item in cart %}
+                {% with product=item.product %}
+                  <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                      <h6 class="my-0">{{ product.title }}</h6>
+                      <p class="my-0">Quantity: {{ item.qty }}</p>
+                      <small class="text-body-secondary">{{ product.description }}</small>
+                    </div>
+                    <div class="text-end">
+                      {% if product.get_sale_price != product.price %}
+                        <div>
+                          <small class="text-muted">
+                            <del>${{ product.price|mul:item.qty }}</del>
+                          </small>
+                        </div>
+                      {% endif %}
+                      <div>
+                        <span class="text-body-secondary">
+                          <strong>${{ product.get_sale_price|mul:item.qty }}</strong>
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                {% endwith %}
+              {% endfor %}
+            </ul>
+              {% comment %} <li class="list-group-item d-flex justify-content-between lh-sm">
+                <div>
+                  <h6 class="my-0">Fresh grapes</h6>
+                  <small class="text-body-secondary">Brief description</small>
+                </div>
+                <span class="text-body-secondary">$8</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between lh-sm">
+                <div>
+                  <h6 class="my-0">Heinz tomato ketchup</h6>
+                  <small class="text-body-secondary">Brief description</small>
+                </div>
+                <span class="text-body-secondary">$5</span>
+              </li> {% endcomment %}
+              <div id="cart-totals-section" class="list-group-item">
+                {% with totals=cart.get_total %}
+                <div class="row mb-2">
+                  <div class="col">Sub-Total:</div>
+                  <div class="col text-end">${{ totals.original_total }}</div>
+                </div>
+                {% if request.user.profile.has_used_first_discount or not request.user.is_authenticated %}
+                  <div class="row">
+                    <div class="col">Discount:</div>
+                    <div class="col text-end">0%</div>
+                  </div>
+                  <div class="row mt-2 fw-bold">
+                    <div class="col">Total:</div>
+                    <div class="col text-end text-success">${{ totals.original_total }}</div>
+                  </div>
+                {% else %}
+                  <div class="row">
+                    <div class="col">Discount:</div>
+                    <div class="col text-end">25% (First Order)</div>
+                  </div>
+                  <div class="row mt-2 fw-bold">
+                    <div class="col">Total:</div>
+                    <div class="col text-end text-success">${{ totals.discounted_total }}</div>
+                  </div>
+                {% endif %}
+                {% endwith %}
+              </div>
+    
+            <a href="{% url 'cart-summary' %}" class="w-100 btn btn-primary btn-lg" role="button">View Cart</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar">
+
+        <div class="offcanvas-header justify-content-between">
+          <h4 class="fw-normal text-uppercase fs-6">Menu</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+  
+        <div class="offcanvas-body">
+      
+          <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-3 mb-0">
+            {% for category in categories %}
+              <li class="nav-item border-dashed active">
+                <a href="index.html" class="nav-link d-flex align-items-center gap-3 text-dark p-2">
+                  <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#fruits"></use></svg>
+                  <span>{{ category.name }}</span>
+                </a>
+              </li>
+            {% endfor %}
+            <li class="nav-item border-dashed">
+              <button class="btn btn-toggle dropdown-toggle position-relative w-100 d-flex justify-content-between align-items-center text-dark p-2" data-bs-toggle="collapse" data-bs-target="#men-collapse" aria-expanded="false">
+                <div class="d-flex gap-3">
+                  <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#beverages"></use></svg>
+                  <span>Men</span>
+                </div>
+              </button>
+              <div class="collapse" id="men-collapse">
+                <ul class="btn-toggle-nav list-unstyled fw-normal ps-5 pb-1">
+                  <li class="border-bottom py-2"><a href="index.html" class="dropdown-item">Summer</a></li>
+                  <li class="border-bottom py-2"><a href="index.html" class="dropdown-item">Winter</a></li>
+                  <li class="border-bottom py-2"><a href="index.html" class="dropdown-item">Accessories</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item border-dashed">
+              <button class="btn btn-toggle dropdown-toggle position-relative w-100 d-flex justify-content-between align-items-center text-dark p-2" data-bs-toggle="collapse" data-bs-target="#women-collapse" aria-expanded="false">
+                <div class="d-flex gap-3">
+                  <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#beverages"></use></svg>
+                  <span>Women</span>
+                </div>
+              </button>
+              <div class="collapse" id="women-collapse">
+                <ul class="btn-toggle-nav list-unstyled fw-normal ps-5 pb-1">
+                  <li class="border-bottom py-2"><a href="index.html" class="dropdown-item">Summer</a></li>
+                  <li class="border-bottom py-2"><a href="index.html" class="dropdown-item">Winter</a></li>
+                  <li class="border-bottom py-2"><a href="index.html" class="dropdown-item">Accessories</a></li>
+                </ul>
+              </div>
+            </li>
+            
+          </ul>
+        
+        </div>
+  
+      </div>
+
+
+      <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+      <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+      <script src="{% static 'js/plugins.js' %}"></script>
+      <script src="{% static 'js/script.js' %}"></script>
+      <script>
+        const csrfToken = "{{ csrf_token }}"; // Pass the CSRF token to JavaScript
+      </script>
+      <script>
+        // Function to update the cart dynamically
+        function updateCart(response) {
+          console.log('Response:', response);
+      
+          // Update cart quantity badge
+          $('#cart-qty2').text(response.qty);
+      
+          // Check if the cart is empty
+          const isEmpty = response.qty === 0;
+          const discountMessage = $('#discount-message');
+      
+          // Dynamically manage the discount message visibility
+          if (!isEmpty) {
+            discountMessage.show();
+          } else {
+            discountMessage.hide();
+          }
+      
+          // Update the Total, Discount, and Final Total amounts
+          const totalBeforeDiscount = `$${response.total_before_discount.toFixed(2)}`;
+          const discountPercentage = response.discount_percentage ? `${response.discount_percentage}%` : '0%';
+          const finalTotal = `$${response.total.toFixed(2)}`;
+      
+          // Update the HTML dynamically
+          const totalsHtml = `
+            <div class="row mb-2">
+              <div class="col">Total:</div>
+              <div class="col text-end">${totalBeforeDiscount}</div>
+            </div>
+            <div class="row">
+              <div class="col">Discount:</div>
+              <div class="col text-end">${discountPercentage}</div>
+            </div>
+            <div class="row mt-2 fw-bold">
+              <div class="col">Final Total:</div>
+              <div class="col text-end text-success">${finalTotal}</div>
+            </div>
+          `;
+          $('#cart-totals-section').html(totalsHtml);
+      
+          // Clear existing cart items
+          const cartList = $('.list-group.mb-3');
+          cartList.empty();
+      
+          // Populate cart items from response
+          response.items.forEach(item => {
+            const originalPrice = item.price * item.qty;
+            const discountedPrice = item.discounted_price * item.qty;
+      
+            const itemHtml = `
+              <li class="list-group-item d-flex justify-content-between lh-sm">
+                <div>
+                  <h6 class="my-0">${item.title}</h6>
+                  <p class="my-0">Quantity: ${item.qty}</p>
+                  <small class="text-body-secondary">${item.description}</small>
+                </div>
+                <div class="text-end">
+                  ${originalPrice !== discountedPrice ? `
+                    <div>
+                      <small class="text-muted">
+                        <del>$${originalPrice.toFixed(2)}</del>
+                      </small>
+                    </div>
+                  ` : ''}
+                  <div>
+                    <span class="text-body-secondary">
+                      <strong>$${discountedPrice.toFixed(2)}</strong>
+                    </span>
+                  </div>
+                </div>
+              </li>
+            `;
+            cartList.append(itemHtml);
+          });
+        }
+      
+        // Event handler for the 'Add to Cart' button
+        $(document).on('click', '.btn-cart', function (e) {
+          e.preventDefault();
+      
+          const productId = $(this).closest('.button-area').find('.wishlist-btn').data('product-id');
+          const productQuantity = $(this).closest('.button-area').find('.quantity').val();
+          const productName = $(this).closest('.product-item').find('.product-title').text().trim();
+          const csrfToken = '{{ csrf_token }}';
+
+          console.log('Product Name:', productName);
+      
+          $.ajax({
+            type: 'POST',
+            url: '{% url "cart-add" %}', // Make sure this matches your Django URL for adding to cart
+            data: {
+              product_id: productId,
+              product_quantity: productQuantity,
+              csrfmiddlewaretoken: csrfToken,
+              action: 'post',
+            },
+            success: function (response) {
+              updateCart(response);
+              showToast(`"${productName}" has been added to your cart!`, 'success');
+            },
+            error: function (xhr, errmsg, err) {
+              console.error('Error adding to cart:', errmsg);
+              alert('Failed to add product to cart. Please try again.');
+            }
+          });
+        });
+      </script>       
+      <script>
+        const categorySelect = document.getElementById('category-select');
+        const categoryInput = document.getElementById('category-input');
+      
+        categorySelect.addEventListener('change', function () {
+          categoryInput.value = categorySelect.value;
+          console.log('Category input value:', categoryInput.value);
+        });
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+      <script src="https://unpkg.com/tippy.js@6/dist/tippy.umd.min.js"></script>
+      <script>
+        tippy('[data-tippy-content]');
+      </script>
+  </body>
+</html>

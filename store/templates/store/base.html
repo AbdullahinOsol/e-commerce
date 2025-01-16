@@ -1,0 +1,134 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OsolShops</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Flowbite -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet"/>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <style>
+        /* Custom styles to ensure dropdown is visible */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .dropdown-menu.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between">
+            <!-- Left Section -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'store' %}" class="text-white text-xl font-semibold">
+                    OsolShops
+                </a>
+                <div class="relative px-2">
+                    <button id="categoriesDropdownButton" class="text-white hover:text-gray-300 flex items-center space-x-1" aria-haspopup="true" aria-expanded="false">
+                        <span>Categories</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <!-- Dropdown menu -->
+                    <ul id="categoriesDropdown" class="dropdown-menu rounded mt-1">
+                        <li><a class="block px-4 py-2 hover:bg-gray-100" href="{% url 'store' %}">All</a></li>
+                        {% for category in all_categories %}
+                            <li><a class="block px-4 py-2 hover:bg-gray-100" href="{{ category.get_absolute_url }}">{{ category.name | capfirst }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Toggle Button for Mobile View -->
+            <button class="lg:hidden text-white" id="navbarToggle" aria-label="Toggle navigation">
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <!-- Right Section -->
+            <div class="hidden lg:flex lg:items-center lg:space-x-2" id="navbarCollapse">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="text-white py-2 px-4 rounded">Register</a>
+                    <a href="{% url 'my-login' %}" class="text-white py-2 px-4 rounded pr-7">Login</a>
+                {% else %}
+                    <a href="{% url 'dashboard' %}" class="text-white py-2 px-4 rounded">Dashboard</a>
+                    <a href="{% url 'wishlist-summary' %}" class="text-white py-2 px-4 rounded">Wishlist</a>
+                    <a href="{% url 'my-logout' %}" class="text-white py-2 px-4 rounded pr-7">Logout</a>
+                {% endif %}
+                <a href="{% url 'cart-summary' %}" class="btn border border-gray-300 text-gray-300 py-2 px-4 rounded hover:border-gray-600">
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                    <span id="cart-qty" class="inline-block ml-2">
+                        {% with qty_amount=cart|length %}
+                            {% if qty_amount > 0 %}
+                                {{ qty_amount }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        {% endwith %}
+                    </span>
+                    <span class="sr-only">items in cart</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content Block -->
+    <div class="w-full">
+        {% block content %}
+        <!-- Your content here -->
+        {% endblock %}
+    </div>
+
+    <!-- JavaScript for Toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoriesDropdownButton = document.getElementById('categoriesDropdownButton');
+            const categoriesDropdown = document.getElementById('categoriesDropdown');
+            const navbarToggle = document.getElementById('navbarToggle');
+            const navbarCollapse = document.getElementById('navbarCollapse');
+
+            categoriesDropdownButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                categoriesDropdown.classList.toggle('show');
+                this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!categoriesDropdown.contains(event.target) && !categoriesDropdownButton.contains(event.target)) {
+                    categoriesDropdown.classList.remove('show');
+                    categoriesDropdownButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            navbarToggle.addEventListener('click', function() {
+                navbarCollapse.classList.toggle('hidden');
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>

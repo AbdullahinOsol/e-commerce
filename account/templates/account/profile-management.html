@@ -1,0 +1,99 @@
+{% extends 'store/base2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="text-center mb-5">Account Management</h2>
+    
+    <div class="row g-4">
+        <!-- Update Account Card -->
+        <div class="col-lg-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">Update Your Account</h3>
+                    <p class="text-muted text-center mb-4">
+                        <small>Joined: {{ user.date_joined|date:"F d, Y" }}</small>
+                    </p>
+                    <form method="POST" autocomplete="off">
+                        {% csrf_token %}
+                        {{ user_form.username|as_crispy_field }}
+                        {{ user_form.email|as_crispy_field }}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Update Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Actions -->
+        <div class="col-lg-6">
+            <div class="row g-4">
+                <!-- Change Password Card -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <h4 class="card-title mb-3">Password</h4>
+                            <p class="text-muted mb-4">Ensure your account stays secure with a strong password.</p>
+                            <div class="d-grid">
+                                <a href="{% url 'change-password' %}" class="btn btn-outline-primary">Change Password</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Shipping Address Card -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <h4 class="card-title mb-3">Shipping Address</h4>
+                            <p class="text-muted mb-4">Keep your shipping information up to date for smooth deliveries.</p>
+                            <div class="d-grid">
+                                <a href="{% url 'manage-shipping' %}" class="btn btn-outline-primary">Manage Address</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delete Account Card -->
+                <div class="col-12">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <h4 class="card-title text-danger mb-3">Delete Account</h4>
+                            <p class="text-muted mb-4">Warning: This action cannot be undone. Please proceed with caution.</p>
+                            <a href="{% url 'delete-account' %}" class="btn btn-outline-danger">Delete Your Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      {% for message in messages %}
+        showToast("{{ message|escapejs }}", "{{ message.tags|default:'primary' }}");
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+
+<style>
+    .form-control {
+        background-color: #f8f9fa;
+    }
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .readonly-field {
+        background-color: #f9f9f9;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}

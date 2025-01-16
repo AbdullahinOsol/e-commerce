@@ -1,0 +1,322 @@
+{% extends "store/base2.html" %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+
+<main class="pt-5">
+    <div class="container">
+        <h1 class="h2 fw-semibold text-center" style="color: #111111">Shopping cart</h1>
+        
+        <hr class="border-top my-4">
+
+        {% for item in cart %}
+        {% with product=item.product %}
+        
+        <div class="card mb-4 shadow-sm">
+            <div class="row g-0">
+                <!-- Product Image Section -->
+                <div class="col-lg-2 bg-light">
+                    <img src="{{ product.image.url }}" class="img-fluid p-3" alt="Product image">
+                </div>
+
+                <!-- Product Information Section -->
+                <div class="col-lg-10">
+                    <div class="card-body">
+                        <a href="{{ product.get_absolute_url }}" class="text-primary text-decoration-none">
+                            <h2 class="h4 fw-medium">{{ product.title }}</h2>
+                        </a>
+                        
+                        <div class="border-top mt-4 pt-4">
+                            <!-- Product Details Row -->
+                            <div class="row border-bottom py-3">
+                                <div class="col-6 fw-medium" style="color: #111111">Price</div>
+                                <div class="col-6 text-end fw-bold">$ {{ product.get_sale_price |mul:item.qty }}</div>
+                            </div>
+                            
+                            <!-- Quantity and Buttons Row -->
+                            <div class="py-4">
+                                <label for="select{{ product.id }}" class="form-label">Qty</label>
+                                <select id="select{{ product.id }}" class="form-select form-select-sm w-auto mb-3">
+                                    <option selected>{{ item.qty }}</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                                
+                                <button type="button" data-index="{{ product.id }}"
+                                    class="btn btn-primary btn-sm update-button me-2">
+                                    Update
+                                </button>
+                                
+                                <button type="button" data-index="{{ product.id }}"
+                                    class="btn btn-danger btn-sm delete-button">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endwith %}
+        {% endfor %}
+
+        <!-- Subtotal Section -->
+        {% with totals=cart.get_total %}
+        <div class="h5 fw-bold d-flex justify-content-between">
+          <span class="text-secondary">Subtotal:</span>
+          <span id="total-before-discount">$ {{ totals.original_total }}</span>
+        </div>
+        
+        {% if request.user.profile.has_used_first_discount or not request.user.is_authenticated %}
+          <div class="h5 fw-bold d-flex justify-content-between">
+            <span class="text-secondary">Discount:</span>
+            <span>0%</span>
+          </div>
+          <div class="h5 fw-bold d-flex justify-content-between text-success">
+            <span class="text-secondary">Final Total:</span>
+            <span id="total">$ {{ totals.original_total }}</span>
+          </div>
+        {% else %}
+          <div class="h5 fw-bold d-flex justify-content-between">
+            <span class="text-secondary">Discount:</span>
+            <span class="text-danger">25%</span>
+          </div>
+          <div class="h5 fw-bold d-flex justify-content-between text-success">
+            <span class="text-secondary">Final Total:</span>
+            <span id="total">$ {{ totals.discounted_total }}</span>
+          </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="d-flex justify-content-end">
+          <a href="{% url 'checkout' %}" class="btn btn-dark btn-block btn-lg ">
+              Proceed to checkout
+          </a>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+
+
+
+    {% comment %} <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+      <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-12">
+            <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+              <div class="card-body p-0">
+                <div class="row g-0">
+                  <div class="col-lg-8">
+                    <div class="p-5">
+                      <div class="d-flex justify-content-between align-items-center mb-5">
+                        <h1 class="fw-bold mb-0">Shopping Cart</h1>
+                        <h6 class="mb-0 text-muted">{{ cart.get_unique_product_count }} items</h6>
+                      </div>
+                      <hr class="my-4">
+                      
+                      {% for item in cart %}
+                      {% with product=item.product %}
+
+                      <div class="row mb-4 d-flex align-items-center">
+                        <!-- Image -->
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                          <img
+                            src="{{ product.image.url }}"
+                            class="img-fluid rounded-3" alt="{{ product.title }}">
+                        </div>
+                      
+                        <!-- Details, Quantity, and Price -->
+                        <div class="col-md-10 col-lg-10 col-xl-10">
+                          <!-- Top Row -->
+                          <div class="d-flex justify-content-between align-items-center">
+                            <!-- Product Details -->
+                            <div class="flex-grow-1 me-3">
+                              <h6 class="text-muted mb-1">{{ product.description }}</h6>
+                              <h6 class="mb-0">{{ product.title }}</h6>
+                            </div>
+                      
+                            <!-- Quantity Controls -->
+                            <div class="d-flex align-items-center me-3">
+                              <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
+                                onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                <i class="fas fa-minus"></i>
+                              </button>
+                      
+                              <input id="form1" data-index="{{ product.id }}" min="0" name="quantity" value="{{ item.qty }}" type="number" max="10"
+                                class="form-control form-control-sm text-center" />
+                      
+                              <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
+                                onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </div>
+                      
+                            <!-- Price -->
+                            <div>
+                              <h6 class="mb-0 text-end">$ {{ product.price|mul:item.qty }}</h6>
+                            </div>
+                          </div>
+                      
+                          <!-- Bottom Row -->
+                          <div class="d-flex justify-content-end mt-3">
+                            <button type="button" data-index="{{ product.id }}" class="btn btn-primary btn-sm me-2 update-button">
+                              Update
+                            </button>
+                            <button type="button" data-index="{{ product.id }}" class="btn btn-danger btn-sm delete-button">
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      
+
+                      {% endwith %}
+                      {% endfor %}
+    
+                      <hr class="my-4">
+    
+                      <div class="pt-5">
+                        <h6 class="mb-0"><a href="#!" class="text-body"><i
+                              class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 bg-body-tertiary">
+                    <div class="p-5">
+                      <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
+                      <hr class="my-4">
+    
+                      <div class="d-flex justify-content-between mb-4">
+                        <h5 class="text-uppercase">items {{ cart.get_unique_product_count }}</h5>
+                        <h5>$ {{ cart.get_total }}</h5>
+                      </div>
+    
+                      <h5 class="text-uppercase mb-3">Shipping</h5>
+    
+                      <div class="mb-4 pb-2">
+                        <select id="shipping-option" data-mdb-select-init>
+                          <option value="1">Free Delivery</option>
+                          <option value="2">Standard-Delivery- €5.00</option>
+                        </select>
+                      </div>
+    
+                      <h5 class="text-uppercase mb-3">Give code</h5>
+    
+                      <div class="mb-5">
+                        <div data-mdb-input-init class="form-outline">
+                          <input type="text" id="form3Examplea2" class="form-control form-control-lg" />
+                          <label class="form-label" for="form3Examplea2">Enter your code</label>
+                        </div>
+                      </div>
+    
+                      <hr class="my-4">
+    
+                      <div class="d-flex justify-content-between mb-5">
+                        <h5 class="text-uppercase">Total price</h5>
+                        <h5 id="final-total-price">$ {{ cart.get_total }}</h5>
+                      </div>
+    
+                      <a href="{% url 'checkout' %}" class="btn btn-dark btn-block btn-lg">
+                        Proceed to checkout
+                      </a>
+    
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section> {% endcomment %}
+</main>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.delete-button', function(e){
+        e.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart-delete" %}',
+            data: {
+                product_id: $(this).data('index'),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post',
+            },
+
+            success: function(json){
+                location.reload()
+                document.getElementById('cart-qty').textContent = json.qty
+                document.getElementById('total').textContent = json.total
+            },
+
+            error: function(xhr, errmsg, err){
+                console.error('Error:', errmsg);
+            },
+        })
+    })
+
+    $(document).on('click', '.update-button', function(e){
+        e.preventDefault();
+
+        var theproductid = $(this).data('index')
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart-update" %}',
+            data: {
+                product_id: $(this).data('index'),
+                product_quantity: $('#select' + theproductid + ' option:selected').text(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post',
+            },
+
+            success: function(json){
+                location.reload()
+                document.getElementById('cart-qty').textContent = json.qty
+                document.getElementById('total').textContent = json.total
+            },
+
+            error: function(xhr, errmsg, err){
+                console.error('Error:', errmsg);
+            },
+        })
+    })
+
+    $(document).ready(function() {
+      console.log('Document is ready');
+      function updateTotalPrice() {
+        var shippingOption = $('#shipping-option').val();
+        console.log('Shipping option:', shippingOption);
+        var baseTotalPrice = parseFloat("{{ cart.get_total }}");
+        console.log('Base total price:', baseTotalPrice);
+
+        if (shippingOption == "2") {
+          baseTotalPrice += 5.00;
+          console.log('Total price with shipping:', baseTotalPrice);
+        }
+
+        $('#final-total-price').text('$' + baseTotalPrice.toFixed(2));
+      }
+
+      $('#shipping-option').change(function() {
+        console.log('Shipping option changed');
+        updateTotalPrice();
+      });
+
+    // Initial calculation when the page loads
+      updateTotalPrice();
+
+    })
+</script>
+
+{% endblock %}

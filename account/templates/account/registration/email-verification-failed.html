@@ -1,0 +1,24 @@
+{% extends 'store/base2.html' %}
+{% load static %}
+
+{% block content %}
+<body class="align-items-center justify-content-center">
+    <div class="container bg-white shadow p-4 rounded mt-5" style="max-width: 500px;">
+        <h3 class="text-center fw-bold mb-3">Email Verification Failed</h3>
+        {% comment %} <h5 class="text-center fw-medium mb-4">We encountered an issue verifying your email</h5> {% endcomment %}
+
+        <div class="alert alert-danger border-start border-4 border-danger mb-4" role="alert">
+            <h6 class="alert-heading">Verification Error</h6>
+            <p>We were unable to verify your email address. This could be due to an expired or invalid verification link.</p>
+        </div>
+
+        <p class="text-muted text-center mb-4">
+            Please try again for account verification.
+        </p>
+
+        <a href="{% url 'home' %}" class="btn btn-primary w-100 mb-3">
+            Return to Home Page
+        </a>
+    </div>
+</body>
+{% endblock %}
