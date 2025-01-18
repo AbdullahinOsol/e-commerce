@@ -87,6 +87,10 @@ def my_login(request):
             if user is not None:
                 auth.login(request, user)
                 return redirect('home')
+
+
+        else:
+            messages.error(request, 'Invalid username or password.')
             
     context = {'form': form, 'page': 'login'}
 
@@ -94,6 +98,7 @@ def my_login(request):
 
 def my_logout(request):
     auth.logout(request)
+    messages.success(request, 'You have been logged out successfully!')
     return redirect('home')
 
 @login_required(login_url='my-login')
@@ -123,7 +128,8 @@ def delete_account(request):
 
     if request.method == 'POST':
         user.delete()
-        return redirect('store')
+        messages.success(request, 'Your account was deleted successfully!')
+        return redirect('home')
 
     return render(request, 'account/delete-account.html')
 

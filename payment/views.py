@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from cart.models import CartItem
 from django.contrib import messages
+from account.models import DiscountUsage
+from django.utils.timezone import now
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -36,9 +38,18 @@ def payment_success(request):
             if key == 'session_key':
                 del request.session[key]
 
-        profile = request.user.profile
-        profile.has_used_first_discount = True
-        profile.save()
+        if not request.user.profile.has_used_first_discount:
+
+            profile = request.user.profile
+            profile.has_used_first_discount = True
+            profile.save()
+
+            email_hash = DiscountUsage.hash_email(request.user.email)
+            DiscountUsage.objects.create(
+                email_hash=email_hash,
+                discount_used=True,
+                used_at=now()
+            )
 
         messages.success(request, 'Your order was successfully placed!')
         print('Order placed successfully!')

@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from .models import CartItem
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
+from django.contrib import messages
 
 def cart_summary(request):
     cart = Cart(request)
@@ -16,9 +17,10 @@ def cart_add(request):
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
         product_quantity = int(request.POST.get('product_quantity'))
+        product_size = request.POST.get('product_size')
 
         product = get_object_or_404(Product, id=product_id)
-        cart.add(product=product, product_qty=product_quantity)
+        cart.add(product=product, product_qty=product_quantity, product_size=product_size)
         
         cart_quantity = cart.__len__()
         total = cart.get_total()
@@ -29,6 +31,7 @@ def cart_add(request):
             {
                 'title': item['product'].title,
                 'qty': item['qty'],
+                'size': item['size'],
                 'price': float(item['price']),
                 'discounted_price': str(item['product'].get_sale_price()),
                 'total': float(item['total']),
@@ -60,13 +63,15 @@ def cart_update(request):
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
         product_quantity = int(request.POST.get('product_quantity'))
+        product_size = request.POST.get('product_size')
 
-        cart.update(product=product_id, qty=product_quantity)
+        cart.update(product=product_id, qty=product_quantity, size=product_size)
 
         cart_quantity = cart.__len__()
         cart_total = cart.get_total()
 
         response = JsonResponse({'qty': cart_quantity, 'total': cart_total})
+        messages.success(request, 'Cart updated successfully')
 
         return response
 
@@ -90,10 +95,10 @@ def synchronize_cart_from_db(request):
 
                 # Use the higher quantity and update both the session and database
                 higher_quantity = max(session_quantity, db_quantity)
-                cart.add(product, higher_quantity)  # This method updates both session and DB
+                cart.add(product, higher_quantity, product_size=item.size)  # Use size from DB
             else:
                 # If the product is only in the DB, add it to the session
-                cart.add(product, item.quantity)
+                cart.add(product, item.quantity, product_size=item.size)
 
         # Step 2: Add session items to the database if they are not already present
         for product_id_str, session_data in session_cart.items():
@@ -106,10 +111,11 @@ def synchronize_cart_from_db(request):
                 # If the item exists, it's already handled in the previous loop
             except CartItem.DoesNotExist:
                 # If the product is only in the session, add it to the database
-                cart.add(product, int(session_data['qty']))
+                cart.add(product, int(session_data['qty']), product_size=session_data.get('size'))
 
         # At the end, ensure the session is properly updated and saved
         request.session['session_key'] = cart.cart
+
 
 @receiver(user_logged_in)
 def handle_user_logged_in(sender, request, user, **kwargs):

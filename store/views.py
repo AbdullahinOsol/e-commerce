@@ -7,6 +7,7 @@ from django.contrib.postgres.search import SearchVector
 from . models import Category, Product, Review, Wishlist
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 
 def store(request):
     all_products = Product.objects.all()
@@ -33,6 +34,24 @@ def list_category(request, category_slug=None):
 def product_info(request, product_slug):
     product = get_object_or_404(Product, slug=product_slug)
     reviews = Review.objects.filter(product=product)
+    categories = product.category.all()
+
+    size_chart_image = None
+    show_care_instructions = False
+    if categories.filter(name__iexact='pants').exists():
+        size_chart_image = 'media/images/pants-size-chart.jpg'
+        show_care_instructions = True
+
+    elif categories.filter(name__iexact='shirts').exists():
+        size_chart_image = 'media/images/shirts-size-chart.jpg'
+        show_care_instructions = True
+
+    elif categories.filter(name__iexact='jackets').exists():
+        size_chart_image = 'media/images/jackets-size-chart.png'
+        show_care_instructions = True
+
+    elif categories.filter(name__iexact='shoes').exists():
+        size_chart_image = 'media/images/shoes-size-chart.png'
 
     if request.user.is_authenticated:
         has_purchased = OrderItem.objects.filter(user=request.user, product=product).exists()
@@ -44,7 +63,7 @@ def product_info(request, product_slug):
         has_commented = False
         has_wishlist = False
 
-    context = {'product': product, 'reviews': reviews, 'has_purchased': has_purchased, 'has_commented': has_commented, 'has_wishlist': has_wishlist}
+    context = {'product': product, 'size_chart_image': size_chart_image, 'show_care_instructions': show_care_instructions, 'reviews': reviews, 'has_purchased': has_purchased, 'has_commented': has_commented, 'has_wishlist': has_wishlist}
 
     if request.method == 'POST':
         rating = request.POST.get('rating')
@@ -60,6 +79,7 @@ def product_info(request, product_slug):
                 image=image,
             )
 
+            messages.success(request, 'Review added successfully!')
             return redirect(reverse('product-info', args=[product_slug]))
 
     return render(request, 'store/product-info.html', context=context)
@@ -108,7 +128,8 @@ def annotate_wishlist_status(queryset, user_wishlist):
 #@login_required(login_url='my-login')
 def home(request):
     cart = Cart(request)
-    categories = Category.objects.all()
+    categories = Category.objects.exclude(name__in=['pants', 'jackets'])
+    print(categories)
     products = Product.objects.all()[:10]
     popular_products = Product.objects.annotate(review_count=Count('reviews')).order_by('-review_count')[:10]
     recent_products = Product.objects.all().order_by('-date_added')[:10]
@@ -157,6 +178,7 @@ def search(request):
 def delete_review(request, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
+    messages.success(request, 'Review deleted successfully!')
 
     return JsonResponse({'message': 'Review deleted successfully'})
 
@@ -166,3 +188,13 @@ def discount_summary(request):
     star_range = range(1, 6)
 
     return render(request, 'store/list-category.html', {'heading': heading, 'products': discounted_products, 'star_range': star_range})
+
+def all_products(request):
+    all_products = Product.objects.all()
+    star_range = range(1, 6)
+
+    if request.user.is_authenticated:
+        user_wishlist = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+        all_products = annotate_wishlist_status(all_products, user_wishlist)
+
+    return render(request, 'store/list-category.html', {'heading': 'All Products', 'products': all_products, 'star_range': star_range})

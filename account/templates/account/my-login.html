@@ -15,8 +15,19 @@
                     <div class="mb-3">
                         {{ form.username|as_crispy_field }}
                     </div>
-                    <div class="mb-3">
-                        {{ form.password|as_crispy_field }}
+                    <label for="password-input">{{ form.password.label }}</label><span class="text-danger"> *</span>
+                    <div class="mb-3 position-relative">
+                        <input type="password" 
+                               class="form-control" 
+                               id="password-input" 
+                               name="password" 
+                               placeholder="Enter your password">
+                        <button type="button" 
+                                class="btn btn-light position-absolute" 
+                                style="right: 10px; top: 50%; transform: translateY(-50%); padding: 0; border: none; background: transparent;" 
+                                onclick="togglePasswordVisibility()">
+                            <i id="password-icon" class="bi bi-eye-slash"></i>
+                        </button>
                     </div>
                     <div class="text-end mb-3">
                         <a href="{% url 'reset_password' %}" class="text-decoration-none small text-primary">Forgot password?</a>
@@ -56,11 +67,42 @@
         border-radius: 10px;
         padding: 12px;
         border: 1px solid #e0e0e0;
-        background-color: #e8f0fe
+        background-color: #e8f0fe;
     }
     .form-control:focus {
         box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
         border-color: #80bdff;
     }
+    #password-input {
+        padding-right: 40px;
+    }
 </style>
+
+{% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      {% for message in messages %}
+        showToast("{{ message|escapejs }}", "{{ message.tags|default:'primary' }}");
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+
+
+<script>
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password-input');
+        const passwordIcon = document.getElementById('password-icon');
+    
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordIcon.classList.remove('bi-eye-slash');
+            passwordIcon.classList.add('bi-eye');
+        } else {
+            passwordInput.type = 'password';
+            passwordIcon.classList.remove('bi-eye');
+            passwordIcon.classList.add('bi-eye-slash');
+        }
+    }
+</script>
 {% endblock %}

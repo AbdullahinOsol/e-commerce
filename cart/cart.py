@@ -15,20 +15,22 @@ class Cart():
 
         self.cart = cart
 
-    def add(self, product, product_qty):
+    def add(self, product, product_qty, product_size):
         product_id = str(product.id)
 
         if product_id in self.cart:
             self.cart[product_id]['qty'] = product_qty
+            self.cart[product_id]['size'] = product_size
 
         else:
-            self.cart[product_id] = {'price': str(product.price), 'qty': product_qty}
+            self.cart[product_id] = {'price': str(product.price), 'qty': product_qty, 'size': product_size}
 
         self.session.modified = True
 
         if self.user:
             cart_item, created = CartItem.objects.get_or_create(user=self.user, product=product)
             cart_item.quantity = product_qty
+            cart_item.size = product_size
             cart_item.save()
 
     def delete(self, product):
@@ -42,18 +44,21 @@ class Cart():
         if self.user:
             CartItem.objects.filter(user=self.user, product_id=product_id).delete()
 
-    def update(self, product, qty):
+    def update(self, product, qty, size):
         product_id = str(product)
         product_quantity = qty
+        product_size = size
 
         if product_id in self.cart:
             self.cart[product_id]['qty'] = product_quantity
+            self.cart[product_id]['size'] = product_size
 
         self.session.modified = True
 
         if self.user:
             cart_item = CartItem.objects.get(user=self.user, product=product)
             cart_item.quantity = qty
+            cart_item.size = size
             cart_item.save()
 
     def __len__(self):

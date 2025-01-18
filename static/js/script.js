@@ -216,13 +216,25 @@
 
   // Toast notification Function
   var showToast = function(message, type = 'primary') {
+
+    var bootstrapTypes = {
+        success: 'success', // Green
+        error: 'danger',    // Red
+        warning: 'warning', // Yellow
+        info: 'info',       // Blue
+        primary: 'primary'  // Default (blue)
+    };
+
     // Get the toast element
     var toastEl = document.getElementById('liveToast');
     console.log('toast intitiated:', toastEl);
 
+    // Map the provided type to a valid Bootstrap type
+    var bootstrapType = bootstrapTypes[type] || 'primary';
+
     // set the message and alert type
     toastEl.querySelector('.toast-body').textContent = message;
-    toastEl.className = `toast align-items-center text-white bg-${type} border-0`;
+    toastEl.className = `toast align-items-center text-white bg-${bootstrapType} border-0`;
 
     // show the toast element
     var toast = new bootstrap.Toast(toastEl);

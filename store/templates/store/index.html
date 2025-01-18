@@ -99,9 +99,9 @@
         <div class="row">
           <div class="col-lg-6 pt-5 mt-5">
             <h2 class="display-1 ls-1"><span class="fw-bold text-primary">Trendiest</span> wardrobe partner for <span class="fw-bold">You</span></h2>
-            <p class="fs-4">Happy Shopping.</p>
+            <p class="fs-4">Start Shopping.</p>
             <div class="d-flex gap-3">
-              <a href="#" class="btn btn-primary text-uppercase fs-6 rounded-pill px-4 py-3 mt-3">Start Shopping</a>
+              <a href="{% url 'all-products' %}" class="btn btn-primary text-uppercase fs-6 rounded-pill px-4 py-3 mt-3">View all products</a>
               {% if not request.user.is_authenticated %}
                 <a href="{% url 'my-login' %}" class="btn btn-dark text-uppercase fs-6 rounded-pill px-4 py-3 mt-3">Join Now</a>
               {% endif %}
@@ -462,7 +462,7 @@
                     {% if user.is_authenticated and not user.has_used_first_discount %}
                       <a href="#best-selling-products" class="btn btn-dark btn-md rounded-0 px-5">Check Best Selling Products Now!</a>
                     {% else %}
-                      <a href="{% url 'register' %}" class="btn btn-dark btn-md rounded-0">Sign Up</a>
+                      <a href="{% url 'register' %}" class="btn btn-dark btn-md rounded-0">Sign Up now to Avail Offer</a>
                     {% endif %}
                   </div>
                 </form>

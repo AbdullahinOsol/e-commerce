@@ -11,6 +11,27 @@
       </div>
     </div>
 
+    <!-- Modal Structure -->
+    <div class="modal fade" id="sizeChartModal" tabindex="-1" aria-labelledby="sizeChartModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sizeChartModalLabel">Size Chart</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+            <!-- Dynamically Render the Size Chart Image -->
+            <img src="{% static size_chart_image %}" alt="Size Chart" class="img-fluid rounded">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <!-- Product Details Section -->
     <div class="col-lg-6">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -36,6 +57,28 @@
             <span class="h5 mb-0">Price</span>
             <span class="h3 mb-0 fw-bold text-primary">$ {{ product.price }}</span>
           </div>
+          <div class="mb-3">
+            <label class="form-label">Size</label>
+            <div class="btn-group" role="group" aria-label="Size selection">
+              <input type="radio" class="btn-check" name="size" id="size-s" value="S" autocomplete="off">
+              <label class="btn btn-outline-primary" for="size-s">S</label>
+
+              <input type="radio" class="btn-check" name="size" id="size-m" value="M" autocomplete="off">
+              <label class="btn btn-outline-primary" for="size-m">M</label>
+
+              <input type="radio" class="btn-check" name="size" id="size-l" value="L" autocomplete="off">
+              <label class="btn btn-outline-primary" for="size-l">L</label>
+
+              <input type="radio" class="btn-check" name="size" id="size-xl" value="XL" autocomplete="off">
+              <label class="btn btn-outline-primary" for="size-xl">XL</label>
+            </div>
+
+            {% if size_chart_image %}
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#sizeChartModal">
+                Size Chart
+              </button>
+            {% endif %}
+          </div>
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
               <label for="select" class="me-2">Qty</label>
@@ -58,19 +101,21 @@
         </div>
       </div>
 
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Material & Care</h5>
-          <p class="mb-2">100% Cotton</p>
-          <ul class="list-unstyled">
-            <li><small>• Machine or handwash up to 30°C/86F</small></li>
-            <li><small>• Gentle cycle</small></li>
-            <li><small>• Do not dry in direct sunlight</small></li>
-            <li><small>• Do not bleach</small></li>
-            <li><small>• Do not iron directly on prints/embroidery</small></li>
-          </ul>
+      {% if show_care_instructions %}
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Material & Care</h5>
+            <p class="mb-2">100% Cotton</p>
+            <ul class="list-unstyled">
+              <li><small>• Machine or handwash up to 30°C/86F</small></li>
+              <li><small>• Gentle cycle</small></li>
+              <li><small>• Do not dry in direct sunlight</small></li>
+              <li><small>• Do not bleach</small></li>
+              <li><small>• Do not iron directly on prints/embroidery</small></li>
+            </ul>
+          </div>
         </div>
-      </div>
+      {% endif %}
     </div>
   </div>
 
@@ -146,6 +191,16 @@
   {% endif %}
 </div>
 
+{% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      {% for message in messages %}
+        showToast("{{ message|escapejs }}", "{{ message.tags|default:'primary' }}");
+      {% endfor %}
+    });
+  </script>
+{% endif %}
+
 <script>
   function updateCart(response) {
     // Update cart quantity
@@ -164,46 +219,56 @@
 
     // Populate cart items from response
     response.items.forEach(item => {
-      console.log('Adding item:', item);
-      console.log('Processing Item:', item);
-      console.log('Item total:', item.total, typeof item.total);
-      console.log('Item qty:', item.qty, typeof item.qty);
-      console.log('Response total:', response.total, typeof response.total);
-      cartList.append(`
-        <li class="list-group-item d-flex justify-content-between lh-sm">
-          <div>
-            <h6 class="my-0">${item.title}</h6>
-            <p class="my-0">Quantity: ${item.qty}</p>
-            <small class="text-body-secondary">${item.description}</small>
-          </div>
-          <span class="text-body-secondary">$${item.total}</span>
-        </li>
-      `);
+        console.log('Adding item:', item);
+        console.log('Processing Item:', item);
+        console.log('Item total:', item.total, typeof item.total);
+        console.log('Item qty:', item.qty, typeof item.qty);
+        console.log('Response total:', response.total, typeof response.total);
+        cartList.append(`
+            <li class="list-group-item d-flex justify-content-between lh-sm">
+                <div>
+                    <h6 class="my-0">${item.title}</h6>
+                    <p class="my-0">Quantity: ${item.qty}</p>
+                    <p class="my-0">Size: ${item.size}</p>
+                    <small class="text-body-secondary">${item.description}</small>
+                </div>
+                <span class="text-body-secondary">$${item.total}</span>
+            </li>
+        `);
     });
-  }
+}
 
-  // Add to cart functionality
-  $(document).on('click', '#add-button', function(e){
+// Add to cart functionality
+$(document).on('click', '#add-button', function(e) {
     e.preventDefault();
     console.log('Add to cart button clicked');
 
+    // Get the selected size
+    const selectedSize = $('input[name="size"]:checked').val();
+    if (!selectedSize) {
+        alert('Please select a size before adding to the cart.');
+        return; // Stop execution if no size is selected
+    }
+
     $.ajax({
-      type: 'POST',
-      url: '{% url "cart-add" %}',
-      data: {
-        product_id: $('#add-button').val(),
-        product_quantity: $('#select option:selected').text(),
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        action: 'post',
-      },
-      success: function(response){
-        updateCart(response);
-      },
-      error: function(xhr, errmsg, err){
-        // Handle error
-      }
+        type: 'POST',
+        url: '{% url "cart-add" %}',
+        data: {
+            product_id: $('#add-button').val(),
+            product_quantity: $('#select option:selected').text(),
+            product_size: selectedSize, // Add the size to the request
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post',
+        },
+        success: function(response) {
+            updateCart(response);
+        },
+        error: function(xhr, errmsg, err) {
+            console.log('Error adding to cart:', errmsg);
+            // Handle error
+        }
     });
-  });
+});
 
   // Image preview
   const imageInput = document.getElementById('image');
@@ -238,7 +303,6 @@
         'X-CSRFToken': '{{ csrf_token }}'
       },
       success: function(data) {
-        alert(data.message);
         location.reload();
       },
       error: function(error) {

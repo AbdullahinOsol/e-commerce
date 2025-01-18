@@ -14,6 +14,7 @@
     <meta name="keywords" content="">
     <meta name="description" content="">
     
+    <link rel="icon" href="https://osoltech.com/hs-fs/hubfs/favicon.png?width=48&amp;height=48&amp;name=favicon.png" sizes="32x32">
     <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
@@ -445,111 +446,117 @@
       <script>
         // Function to update the cart dynamically
         function updateCart(response) {
-          console.log('Response:', response);
-      
-          // Update cart quantity badge
-          $('#cart-qty2').text(response.qty);
-      
-          // Check if the cart is empty
-          const isEmpty = response.qty === 0;
-          const discountMessage = $('#discount-message');
-      
-          // Dynamically manage the discount message visibility
-          if (!isEmpty) {
-            discountMessage.show();
-          } else {
-            discountMessage.hide();
-          }
-      
-          // Update the Total, Discount, and Final Total amounts
-          const totalBeforeDiscount = `$${response.total_before_discount.toFixed(2)}`;
-          const discountPercentage = response.discount_percentage ? `${response.discount_percentage}%` : '0%';
-          const finalTotal = `$${response.total.toFixed(2)}`;
-      
-          // Update the HTML dynamically
-          const totalsHtml = `
-            <div class="row mb-2">
-              <div class="col">Total:</div>
-              <div class="col text-end">${totalBeforeDiscount}</div>
-            </div>
-            <div class="row">
-              <div class="col">Discount:</div>
-              <div class="col text-end">${discountPercentage}</div>
-            </div>
-            <div class="row mt-2 fw-bold">
-              <div class="col">Final Total:</div>
-              <div class="col text-end text-success">${finalTotal}</div>
-            </div>
-          `;
-          $('#cart-totals-section').html(totalsHtml);
-      
-          // Clear existing cart items
-          const cartList = $('.list-group.mb-3');
-          cartList.empty();
-      
-          // Populate cart items from response
-          response.items.forEach(item => {
-            const originalPrice = item.price * item.qty;
-            const discountedPrice = item.discounted_price * item.qty;
-      
-            const itemHtml = `
-              <li class="list-group-item d-flex justify-content-between lh-sm">
-                <div>
-                  <h6 class="my-0">${item.title}</h6>
-                  <p class="my-0">Quantity: ${item.qty}</p>
-                  <small class="text-body-secondary">${item.description}</small>
+            console.log('Response:', response);
+    
+            // Update cart quantity badge
+            $('#cart-qty2').text(response.qty);
+    
+            // Check if the cart is empty
+            const isEmpty = response.qty === 0;
+            const discountMessage = $('#discount-message');
+    
+            // Dynamically manage the discount message visibility
+            if (!isEmpty) {
+                discountMessage.show();
+            } else {
+                discountMessage.hide();
+            }
+    
+            // Update the Total, Discount, and Final Total amounts
+            const totalBeforeDiscount = `$${response.total_before_discount.toFixed(2)}`;
+            const discountPercentage = response.discount_percentage ? `${response.discount_percentage}%` : '0%';
+            const finalTotal = `$${response.total.toFixed(2)}`;
+    
+            // Update the HTML dynamically
+            const totalsHtml = `
+                <div class="row mb-2">
+                    <div class="col">Total:</div>
+                    <div class="col text-end">${totalBeforeDiscount}</div>
                 </div>
-                <div class="text-end">
-                  ${originalPrice !== discountedPrice ? `
-                    <div>
-                      <small class="text-muted">
-                        <del>$${originalPrice.toFixed(2)}</del>
-                      </small>
-                    </div>
-                  ` : ''}
-                  <div>
-                    <span class="text-body-secondary">
-                      <strong>$${discountedPrice.toFixed(2)}</strong>
-                    </span>
-                  </div>
+                <div class="row">
+                    <div class="col">Discount:</div>
+                    <div class="col text-end">${discountPercentage}</div>
                 </div>
-              </li>
+                <div class="row mt-2 fw-bold">
+                    <div class="col">Final Total:</div>
+                    <div class="col text-end text-success">${finalTotal}</div>
+                </div>
             `;
-            cartList.append(itemHtml);
-          });
+            $('#cart-totals-section').html(totalsHtml);
+    
+            // Clear existing cart items
+            const cartList = $('.list-group.mb-3');
+            cartList.empty();
+    
+            // Populate cart items from response
+            response.items.forEach(item => {
+                const originalPrice = item.price * item.qty;
+                const discountedPrice = item.discounted_price * item.qty;
+    
+                const itemHtml = `
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <h6 class="my-0">${item.title}</h6>
+                            <p class="my-0">Quantity: ${item.qty}</p>
+                            <small class="text-body-secondary">${item.description}</small>
+                        </div>
+                        <div class="text-end">
+                            ${originalPrice !== discountedPrice ? `
+                                <div>
+                                    <small class="text-muted">
+                                        <del>$${originalPrice.toFixed(2)}</del>
+                                    </small>
+                                </div>
+                            ` : ''}
+                            <div>
+                                <span class="text-body-secondary">
+                                    <strong>$${discountedPrice.toFixed(2)}</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                `;
+                cartList.append(itemHtml);
+            });
         }
-      
+    
         // Event handler for the 'Add to Cart' button
         $(document).on('click', '.btn-cart', function (e) {
-          e.preventDefault();
-      
-          const productId = $(this).closest('.button-area').find('.wishlist-btn').data('product-id');
-          const productQuantity = $(this).closest('.button-area').find('.quantity').val();
-          const productName = $(this).closest('.product-item').find('.product-title').text().trim();
-          const csrfToken = '{{ csrf_token }}';
-
-          console.log('Product Name:', productName);
-      
-          $.ajax({
-            type: 'POST',
-            url: '{% url "cart-add" %}', // Make sure this matches your Django URL for adding to cart
-            data: {
-              product_id: productId,
-              product_quantity: productQuantity,
-              csrfmiddlewaretoken: csrfToken,
-              action: 'post',
-            },
-            success: function (response) {
-              updateCart(response);
-              showToast(`"${productName}" has been added to your cart!`, 'success');
-            },
-            error: function (xhr, errmsg, err) {
-              console.error('Error adding to cart:', errmsg);
-              alert('Failed to add product to cart. Please try again.');
-            }
-          });
+            e.preventDefault();
+    
+            const productId = $(this).closest('.button-area').find('.wishlist-btn').data('product-id');
+            const productQuantity = $(this).closest('.button-area').find('.quantity').val();
+            const productName = $(this).closest('.product-item').find('.product-title').text().trim();
+            const csrfToken = '{{ csrf_token }}';
+    
+            // Get the selected size (if available) or use a default size (Small or S)
+            const productSize = $(this).closest('.product-item').find('.size-selector').val() || 'S';  // Assuming you have a size selector with a class 'size-selector'
+    
+            console.log('Product Name:', productName);
+            console.log('Selected Size:', productSize); // Log the selected size for debugging
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart-add" %}', // Make sure this matches your Django URL for adding to cart
+                data: {
+                    product_id: productId,
+                    product_quantity: productQuantity,
+                    product_size: productSize,  // Send the selected size
+                    csrfmiddlewaretoken: csrfToken,
+                    action: 'post',
+                },
+                success: function (response) {
+                    updateCart(response);
+                    showToast(`The product has been added to your cart!`, 'success');
+                },
+                error: function (xhr, errmsg, err) {
+                    console.error('Error adding to cart:', errmsg);
+                    alert('Failed to add product to cart. Please try again.');
+                }
+            });
         });
-      </script>       
+    </script>
+           
       <script>
         const categorySelect = document.getElementById('category-select');
         const categoryInput = document.getElementById('category-input');
