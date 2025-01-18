@@ -81,7 +81,8 @@
                             class="form-control border-0 bg-transparent custom-select-size" 
                             placeholder="Search for products" 
                             name="q" 
-                            value="{{ request.GET.q|default:'' }}">
+                            value="{{ request.GET.q|default:'' }}"
+                            maxlength="30">
                       <input type="hidden" id="category-input" name="category" value="{{ request.GET.category|default:'' }}">
                     </form>
                   
@@ -571,6 +572,15 @@
       <script src="https://unpkg.com/tippy.js@6/dist/tippy.umd.min.js"></script>
       <script>
         tippy('[data-tippy-content]');
+      </script>
+      <script>
+          document.getElementById('search-form').addEventListener('submit', function(event) {
+              const searchInput = document.querySelector('input[name="q"]');
+              if (!searchInput.value.trim()) {
+                  event.preventDefault(); // Prevent form submission
+                  showToast('Please enter a search query', 'error');
+              }
+          });
       </script>
   </body>
 </html>
