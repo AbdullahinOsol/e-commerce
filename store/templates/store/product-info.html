@@ -246,7 +246,7 @@ $(document).on('click', '#add-button', function(e) {
     // Get the selected size
     const selectedSize = $('input[name="size"]:checked').val();
     if (!selectedSize) {
-        alert('Please select a size before adding to the cart.');
+        showToast('Please select a size before adding to the cart.', 'error');
         return; // Stop execution if no size is selected
     }
 
@@ -262,6 +262,7 @@ $(document).on('click', '#add-button', function(e) {
         },
         success: function(response) {
             updateCart(response);
+            showToast('Product added to cart', 'success');
         },
         error: function(xhr, errmsg, err) {
             console.log('Error adding to cart:', errmsg);
