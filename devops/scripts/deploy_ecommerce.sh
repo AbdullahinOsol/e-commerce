@@ -3,7 +3,7 @@
 set -e
 
 # Define variables from Jenkins environment
-WORKSPACE="$WORKSPACE"          # Jenkins workspace (automatically populated)
+WORKSPACE="WORKSPACE"          # Jenkins workspace (automatically populated)
 DESTINATION="$DESTINATION"  # Destination directory on EC2
 PUBLIC_IP="$PUBLIC_IP"          # EC2 Public IP (from Jenkins environment)
 SSH_KEY_FILE="$SSH_KEY_FILE"    # SSH key file (from Jenkins environment)
@@ -18,7 +18,7 @@ fi
 
 # Rsync the latest code from Jenkins workspace to the EC2 server's destination directory
 echo "Syncing files from Jenkins workspace ($WORKSPACE) to EC2 destination ($DESTINATION)..."
-rsync -avzu -e "ssh -i $SSH_KEY_FILE" "$WORKSPACE" "$SSH_USERNAME@$PUBLIC_IP:$DESTINATION"
+rsync -avzu -e "ssh -i $SSH_KEY_FILE" "$WORKSPACE/" "$SSH_USERNAME@$PUBLIC_IP:$DESTINATION"
 
 # Execute the deploy_ecommerce.sh script in the destination directory on the EC2 instance
 echo "Executing deployment process on EC2 server..."
