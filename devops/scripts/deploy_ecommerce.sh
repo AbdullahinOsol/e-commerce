@@ -3,7 +3,6 @@
 set -e
 
 # Define variables from Jenkins environment
-WORKSPACE="WORKSPACE"          # Jenkins workspace (automatically populated)
 DESTINATION="$DESTINATION"  # Destination directory on EC2
 PUBLIC_IP="$PUBLIC_IP"          # EC2 Public IP (from Jenkins environment)
 SSH_KEY_FILE="$SSH_KEY_FILE"    # SSH key file (from Jenkins environment)
